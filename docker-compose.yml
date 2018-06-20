@@ -1,0 +1,26 @@
+version: "3.1"
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    entrypoint: bash entrypoint.sh
+    working_dir: /source
+    volumes:
+      - .:/source
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+    env_file:
+      - deployment/development/dev.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=project.settings.dev
+
+  database:
+    container_name: database
+    image: postgres:10.1-alpine
+    env_file:
+      - deployment/development/dev.env
