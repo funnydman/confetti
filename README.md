@@ -1,5 +1,5 @@
 # CONFETTI
-The way to start a django project with docker
+> The way to start a django project with docker
 
 <p align="center"> <img src="https://preview.ibb.co/eDU9Zd/conf.png"></p>
 
