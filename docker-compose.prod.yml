@@ -1,0 +1,48 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    entrypoint: gunicorn -w 3 --bind=0.0.0.0:8000 confetti.wsgi
+    volumes:
+      - .:/app/
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=confetti.settings.prod
+    depends_on:
+      - db
+  db:
+    image: "postgres:13-alpine"
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./dbdata-prod:/var/lib/postgresql/data
+    expose:
+      - "5432"
+  nginx:
+    image: "nginx:1.19-alpine"
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./deployment/nginx:/etc/nginx/conf.d
+      - ./deployment/certbot/conf:/etc/letsencrypt
+      - ./static:/var/www/static
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\";'"
+    depends_on:
+      - web
+  certbot:
+    image: "certbot/certbot"
+    restart: always
+    volumes:
+      - ./deployment/certbot/conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx

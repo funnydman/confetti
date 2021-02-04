@@ -1,26 +1,26 @@
-version: "3.1"
+version: "3"
 services:
   web:
-    container_name: web
     build:
       context: .
       dockerfile: Dockerfile
-    tty: true
-    entrypoint: bash entrypoint.sh
-    working_dir: /source
     volumes:
-      - .:/source
+      - .:/app/
+    entrypoint: python manage.py runserver  0.0.0.0:8000
     ports:
-      - 8000:8000
-    depends_on:
-      - database
+      - "127.0.0.1:8000:8000"
     env_file:
-      - deployment/development/dev.env
+      - dev.env
     environment:
-      - DJANGO_SETTINGS_MODULE=project.settings.dev
-
-  database:
-    container_name: database
-    image: postgres:10.1-alpine
+      - DJANGO_SETTINGS_MODULE=confetti.settings.dev
+    depends_on:
+      - db
+  db:
+    image: "postgres:13-alpine"
     env_file:
-      - deployment/development/dev.env
+      - dev.env
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+

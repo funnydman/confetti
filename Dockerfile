@@ -1,13 +1,20 @@
-FROM python:3.5
+FROM python:3.7-slim
 
-RUN mkdir /source
-ADD . /source
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /source
+RUN apt-get update \
+    && apt-get install -y netcat postgresql-client \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN apt-get update && \
-    apt-get install -y postgresql-client
+WORKDIR /app
 
-RUN chmod +x entrypoint.sh
+COPY Pipfile*  /app/
+RUN pip install pipenv && \
+    pipenv install --system --deploy --ignore-pipfile
 
-RUN pip install -r requirements.txt
+COPY docker-entrypoint.sh /app/
+RUN chmod +x docker-entrypoint.sh
+
+COPY . /app/
+
+CMD ["sh", "/app/docker-entrypoint.sh"]
