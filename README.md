@@ -82,4 +82,6 @@ alias dcub=docker-compose up --build
 alias dcu=docker-compose up
 ```
 
+> ⭐️ Thanks everyone who has starred the project, it means a lot!
+
 Happy coding :blush:
