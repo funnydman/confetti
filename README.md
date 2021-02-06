@@ -18,23 +18,23 @@
 2. Install ```docker``` and ```docker-compose``` using official documentation.
 
 3. Add user to the docker group to run commands without sudo: 
-```bash
+```
 sudo usermod -aG docker $USER
 ```
 4. Update settings in `dev.env` and `confetti/settings/prod.py`(recommended).
 
 5. Go to the project root and run:
-```bash
+```
 docker-compose up
 ``` 
 
 6. Create Django superuser in the container(in the second shell):
-```bash
+```
 docker-compose exec web python manage.py createsuperuser 
 ```
 
 7. Run tests(optional):
-```bash
+```
 docker-compose exec web python manage.py test 
 ```
 
@@ -45,7 +45,7 @@ docker-compose exec web python manage.py test
 1. Create and fill `.env` and `confetti/settings/prod.py`.
 
 2. Run application: 
- ```bash
+ ```
 docker-compose -f docker-compose.prod.yml up
 ```
 3. Generate certificates(see next section).
@@ -57,29 +57,29 @@ How to generate ssl certificates? [Follow this guide.](https://medium.com/@penta
 
 The simplest way with less headaches:
 1. ssh to the server and go to the project root, assume that you configured domains properly: 
-```bash
+```
 docker-compose -f docker-compose.prod.yml exec nginx sh
 ```
 2. Install certbot:
-```bash
+```
 apk update && apk add certbot certbot-nginx
 ```
 3. Generate certificates, we use volumes so we don't need to copy certs manually,
  don't forget to commit them or even better exclude them from git tracking: 
-```bash
+```
 certbot certonly --nginx # follow instructions
 ```
 
 4. Update data in `deployment/nginx/app.conf`, and then:
-```bash
+```
 docker-compose -f docker-compose.prod.yml up --build
 ```
 
 Ad Hoc docker/docker-compose commands (put in .bash_aliases):
-```bash
+```
 alias dcubn=docker-compose build --no-cache
-alist dcub=docker-compose up --build
-alist dcu=docker-compose up
+alias dcub=docker-compose up --build
+alias dcu=docker-compose up
 ```
 
 Happy coding :blush:
